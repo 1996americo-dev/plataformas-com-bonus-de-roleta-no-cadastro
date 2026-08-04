@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from './supabase'
 
 const SENHA_ADMIN = "Grazi2024!"
-const LOGO_URL = "https://i.imgur.com/8Km9tLL.png" // TROCA PELA SUA LOGO 512x512
+const LOGO_URL = "https://i.imgur.com/8Km9tLL.png"
 
 export default function App(){
   const [links, setLinks] = useState([])
@@ -70,8 +70,8 @@ export default function App(){
   if(isAdmin &&!logado){
     return (
       <div style={{padding:20, fontFamily:'Arial', maxWidth:400, margin:'50px auto', textAlign:'center'}}>
-        <img src={LOGO_URL} style={{width:120, height:120, borderRadius:20, marginBottom:20}}/>
-        <h2>Área Admin</h2>
+        <img src={LOGO_URL} style={{width:100, height:100, borderRadius:'50%', border:'4px solid #FFEB3B', objectFit:'cover'}}/>
+        <h2 style={{marginTop:15}}>Área Admin</h2>
         <input type="password" placeholder="Senha" value={senha} onChange={e=>setSenha(e.target.value)} style={{padding:12, width:'100%', marginBottom:10, borderRadius:8, border:'1px solid #ccc'}}/>
         <button onClick={()=>{ if(senha===SENHA_ADMIN) setLogado(true); else alert('Senha errada')}} style={{padding:'12px 20px', background:'black', color:'white', border:'none', borderRadius:8, cursor:'pointer', width:'100%', fontWeight:'bold'}}>Entrar</button>
       </div>
@@ -80,18 +80,14 @@ export default function App(){
 
   return (
     <div style={{ fontFamily:'Arial', background:'#f5f5f7', minHeight:'100vh' }}>
-      {/* HEADER PROFISSIONAL COM LOGO */}
-      <header style={{background:'linear-gradient(135deg, #0f0f0f 0%, #2d2d2d 100%)', padding:'25px 20px', textAlign:'center', color:'white', boxShadow:'0 4px 20px rgba(0,0,0,0.2)'}}>
-        <img src={LOGO_URL} alt="Logo" style={{width:90, height:90, borderRadius:20, border:'3px solid #FFEB3B', boxShadow:'0 4px 15px rgba(0,0,0,0.3)'}}/>
-        <h1 style={{margin:'15px 0 5px 0', fontSize:26, letterSpacing:1}}>PLATAFORMAS COM BÔNUS DE ROLETA NO CADASTRO</h1>
-        <p style={{margin:0, opacity:0.8, fontSize:14}}>As melhores com bônus liberado - Atualizado 2026</p>
-
-        {/* REDES SOCIAIS NO TOPO */}
+      <header style={{background:'linear-gradient(135deg, #0f0f0f 0%, #2d2d2d 100%)', padding:'30px 20px', textAlign:'center', color:'white'}}>
+        <img src={LOGO_URL} alt="Logo" style={{width:100, height:100, borderRadius:'50%', border:'4px solid #FFEB3B', objectFit:'cover', boxShadow:'0 4px 15px rgba(255,235,59,0.3)'}}/>
+        <h1 style={{margin:'15px 0 0 0', fontSize:24, letterSpacing:1, fontWeight:'bold'}}>PLATAFORMAS COM BÔNUS DE ROLETA NO CADASTRO</h1>
         {linksTopo.length>0 && (
           <div style={{marginTop:20, display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap'}}>
             {linksTopo.map(s=>(
-              <a key={s.id} href={s.url} target="_blank" style={{background:'white', color:'black', padding:'8px 16px', borderRadius:20, textDecoration:'none', fontWeight:'bold', fontSize:14, display:'flex', alignItems:'center', gap:6}}>
-                <span>{s.emoji}</span> {s.titulo}
+              <a key={s.id} href={s.url} target="_blank" style={{background:'white', color:'black', padding:'8px 16px', borderRadius:20, textDecoration:'none', fontWeight:'bold', fontSize:14}}>
+                {s.emoji} {s.titulo}
               </a>
             ))}
           </div>
@@ -105,17 +101,15 @@ export default function App(){
               ADMIN - {linksPlataformas.length} links
               <div style={{ fontSize: 24, marginTop: 5 }}>[TOTAL: {totalCliques} CLIQUES]</div>
             </div>
-
             <div style={{border:'1px solid #ddd', padding:15, borderRadius:12, marginBottom:20, background:'#fff'}}>
               <h3>🌐 Cadastrar Rede Social do Topo</h3>
-              <div style={{display:'flex', gap:8}}>
-                <input placeholder="Emoji (📲 💬 📢)" value={formSocial.emoji} onChange={e=>setFormSocial({...formSocial,emoji:e.target.value})} style={{width:80, padding:10, borderRadius:8, border:'1px solid #ccc'}}/>
-                <input placeholder="Nome (Instagram, Telegram...)" value={formSocial.titulo} onChange={e=>setFormSocial({...formSocial,titulo:e.target.value})} style={{flex:1, padding:10, borderRadius:8, border:'1px solid #ccc'}}/>
+              <div style={{display:'flex', gap:8, flexWrap:'wrap'}}>
+                <input placeholder="Emoji" value={formSocial.emoji} onChange={e=>setFormSocial({...formSocial,emoji:e.target.value})} style={{width:80, padding:10, borderRadius:8, border:'1px solid #ccc'}}/>
+                <input placeholder="Nome" value={formSocial.titulo} onChange={e=>setFormSocial({...formSocial,titulo:e.target.value})} style={{flex:1, padding:10, borderRadius:8, border:'1px solid #ccc'}}/>
                 <input placeholder="Link" value={formSocial.url} onChange={e=>setFormSocial({...formSocial,url:e.target.value})} style={{flex:1, padding:10, borderRadius:8, border:'1px solid #ccc'}}/>
                 <button onClick={salvarSocial} style={{background:'#111', color:'white', padding:'10px 15px', border:'none', borderRadius:8, cursor:'pointer'}}>Add Topo</button>
               </div>
             </div>
-
             <div style={{border:'1px solid #ddd', padding:15, borderRadius:12, marginBottom:25, background:'#fff'}}>
               <h3>Cadastrar Nova Plataforma</h3>
               <input placeholder="Título" value={form.titulo} onChange={e=>setForm({...form,titulo:e.target.value})} style={{width:'100%', padding:10, marginBottom:8, borderRadius:8, border:'1px solid #ccc'}}/>
@@ -124,12 +118,11 @@ export default function App(){
               <input placeholder="Emoji 🎯" value={form.emoji} onChange={e=>setForm({...form,emoji:e.target.value})} style={{width:'100%', padding:10, marginBottom:8, borderRadius:8, border:'1px solid #ccc'}}/>
               <label style={{fontWeight:'bold'}}>Imagem 512x512:</label>
               <input type="file" accept="image/*" onChange={handleImagem} style={{width:'100%', padding:10, marginBottom:8}}/>
-              {preview && <img src={preview} style={{width:128, height:128, objectFit:'cover', borderRadius:8}}/>}
+              {preview && <img src={preview} style={{width:128, height:128, objectFit:'cover', borderRadius:8, border:'1px solid #ccc'}}/>}
               <button onClick={salvarLink} disabled={carregando} style={{background:'green', color:'white', padding:'12px', border:'none', borderRadius:8, cursor:'pointer', marginTop:10, width:'100%', fontWeight:'bold'}}>{carregando?'Enviando...':'Salvar Link'}</button>
             </div>
           </>
         )}
-
         <div style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill, minmax(300px, 1fr))', gap: 20, marginTop: 20 }}>
           {linksPlataformas.map(l => (
             <div key={l.id} style={{ border: '1px solid #e5e7eb', padding: 0, borderRadius: 16, background:'#fff', overflow:'hidden', boxShadow:'0 4px 12px rgba(0,0,0,0.08)' }}>
@@ -138,15 +131,12 @@ export default function App(){
                 <h3 style={{margin:'0 0 5px 0'}}>{l.emoji} {l.titulo}</h3>
                 <p style={{color:'#22c55e', fontWeight:'bold', margin:'5px 0'}}>{l.bonus}</p>
                 {isAdmin && logado && <p style={{ color: 'blue' }}>Cliques: {l.cliques || 0}</p>}
-                <button onClick={() => clicar(l)} style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)', color: 'white', padding: '12px', border: 'none', borderRadius: 10, cursor: 'pointer', fontWeight: 'bold', width:'100%', marginTop:10, fontSize:16 }}>
-                  ACESSAR PLATAFORMA →
-                </button>
+                <button onClick={() => clicar(l)} style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)', color: 'white', padding: '12px', border: 'none', borderRadius: 10, cursor: 'pointer', fontWeight: 'bold', width:'100%', marginTop:10, fontSize:16 }}>ACESSAR PLATAFORMA →</button>
                 {isAdmin && logado && <button onClick={() => deletar(l.id)} style={{ background: '#ef4444', color: 'white', padding: '8px', border: 'none', borderRadius: 8, cursor: 'pointer', width:'100%', marginTop:8 }}>Deletar</button>}
               </div>
             </div>
           ))}
         </div>
-
         {linksPlataformas.length === 0 && <p style={{ textAlign: 'center', marginTop: 40, color:'#888' }}>Nenhum link cadastrado ainda. Vá no /#admin para cadastrar.</p>}
       </div>
     </div>
