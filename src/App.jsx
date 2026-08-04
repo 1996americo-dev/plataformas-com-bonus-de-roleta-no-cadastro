@@ -137,7 +137,7 @@ export default function App(){
             </div>
           ))}
         </div>
-        {linksPlataformas.length === 0 && <p style={{ textAlign: 'center', marginTop: 40, color:'#888' }}>Nenhum link cadastrado ainda. Vá no /#admin para cadastrar.</p>}
+        {linksPlataformas.length === 0 && <p style={{ textAlign: 'center', marginTop: 40, color:'#888' }}>.</p>}
       </div>
     </div>
   )
