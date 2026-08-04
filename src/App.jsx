@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from './supabase'
 
 const SENHA_ADMIN = "Grazi2024!"
-const LOGO_URL = "https://i.imgur.com/8Km9tLL.png"
+const LOGO_URL = "/edited_image_6191efe2.jpg" // logo transparente
 
 export default function App(){
   const [links, setLinks] = useState([])
@@ -81,7 +81,7 @@ export default function App(){
   return (
     <div style={{ fontFamily:'Arial', background:'#f5f5f7', minHeight:'100vh' }}>
       <header style={{background:'linear-gradient(135deg, #0f0f0f 0%, #2d2d2d 100%)', padding:'30px 20px', textAlign:'center', color:'white'}}>
-        <img src={LOGO_URL} alt="Logo" style={{width:100, height:100, borderRadius:'50%', border:'4px solid #FFEB3B', objectFit:'cover', boxShadow:'0 4px 15px rgba(255,235,59,0.3)'}}/>
+        <img src={LOGO_URL} alt="Logo" style={{width:100, height:100, borderRadius:'50%', border:'4px solid #FFEB3B', objectFit:'cover', background:'transparent'}}/>
         <h1 style={{margin:'15px 0 0 0', fontSize:24, letterSpacing:1, fontWeight:'bold'}}>PLATAFORMAS COM BÔNUS DE ROLETA NO CADASTRO</h1>
         {linksTopo.length>0 && (
           <div style={{marginTop:20, display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap'}}>
@@ -137,7 +137,7 @@ export default function App(){
             </div>
           ))}
         </div>
-        {linksPlataformas.length === 0 && <p style={{ textAlign: 'center', marginTop: 40, color:'#888' }}>.</p>}
+        {linksPlataformas.length === 0 && <p style={{ textAlign: 'center', marginTop: 40, color:'#888' }}>Nenhum link cadastrado ainda. Vá no /#admin para cadastrar.</p>}
       </div>
     </div>
   )
