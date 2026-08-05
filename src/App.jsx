@@ -1,143 +1,207 @@
-import { useEffect, useState } from 'react'
-import { supabase } from './supabase'
+// App.jsx - PLATAFORMAS COM BÔNUS DE ROLETA NO CADASTRO
+// REPLACE GROUP_URL WITH YOUR FACEBOOK GROUP LINK
 
-const SENHA_ADMIN = "Grazi2024!"
-const LOGO_URL = "https://xvhtuacgagthzvusybsg.supabase.co/storage/v1/object/public/roleta/edited_image_6191efe2.jpg"
+import { useState, useEffect } from 'react'
+import { createClient } from '@supabase/supabase-js'
 
-export default function App(){
+// SUAS CHAVES DO SUPABASE - troca pelas suas se mudar
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+// SEU LINK DO GRUPO VIP
+const GROUP_URL = "https://www.facebook.com/share/g/1EKJ8WqU9d/"
+
+export default function App() {
   const [links, setLinks] = useState([])
-  const [isAdmin, setIsAdmin] = useState(window.location.hash.includes('admin'))
-  const [logado, setLogado] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [senha, setSenha] = useState('')
-  const [form, setForm] = useState({titulo:'',url:'',emoji:'🎯',imagem:'',categoria:'plataforma',bonus:''})
-  const [formSocial, setFormSocial] = useState({titulo:'',url:'',emoji:'📲'})
-  const [preview, setPreview] = useState('')
-  const [carregando, setCarregando] = useState(false)
+  const [form, setForm] = useState({ titulo: '', url: '', imagem: '', bonus: '' })
 
-  async function carregar(){
-    const {data} = await supabase.from('links_roleta').select('*').order('cliques',{ascending:false})
-    if(data) setLinks(data)
-  }
-  useEffect(()=>{ carregar() },[])
-
-  async function clicar(link){
-    await supabase.from('links_roleta').update({cliques:(link.cliques||0)+1}).eq('id',link.id)
-    window.open(link.url,'_blank')
-    carregar()
-  }
-
-  async function handleImagem(e){
-    const file = e.target.files[0]
-    if(!file) return
-    setPreview(URL.createObjectURL(file))
-    setCarregando(true)
-    const nome = `${Date.now()}_${file.name}`
-    const {error} = await supabase.storage.from('imagens').upload(nome, file)
-    if(error){
-      const reader = new FileReader()
-      reader.onloadend = ()=> setForm(f=>({...f, imagem: reader.result}))
-      reader.readAsDataURL(file)
-    } else {
-      const {data} = supabase.storage.from('imagens').getPublicUrl(nome)
-      setForm(f=>({...f, imagem: data.publicUrl}))
+  // Checa se é admin pela url
+  useEffect(() => {
+    if (window.location.hash === '#admin') {
+      setIsAdmin(true)
     }
-    setCarregando(false)
+    buscarLinks()
+  }, [])
+
+  // Busca plataformas do Supabase
+  async function buscarLinks() {
+    const { data, error } = await supabase
+     .from('links_roleta')
+     .select('*')
+     .order('created_at', { ascending: false })
+
+    if (!error) setLinks(data)
   }
 
-  async function salvarLink(){
-    if(!form.titulo ||!form.url) return alert('Título e URL obrigatórios')
-    await supabase.from('links_roleta').insert([{...form, cliques:0}])
-    setForm({titulo:'',url:'',emoji:'🎯',imagem:'',categoria:'plataforma',bonus:''})
-    setPreview('')
-    carregar()
+  // Cadastra nova plataforma
+  async function handleSubmit(e) {
+    e.preventDefault()
+    const { error } = await supabase.from('links_roleta').insert([{
+      titulo: form.titulo,
+      url: form.url,
+      imagem: form.imagem,
+      bonus: form.bonus || '',
+      cliques: 0
+    }])
+
+    if (!error) {
+      setForm({ titulo: '', url: '', imagem: '', bonus: '' })
+      buscarLinks()
+      alert('Plataforma adicionada!')
+    } else {
+      alert('Erro: ' + error.message)
+    }
   }
 
-  async function salvarSocial(){
-    if(!formSocial.titulo ||!formSocial.url) return alert('Preencha rede social')
-    await supabase.from('links_roleta').insert([{...formSocial, categoria:'social_topo', cliques:0, bonus:'REDE SOCIAL'}])
-    setFormSocial({titulo:'',url:'',emoji:'📲'})
-    carregar()
+  // Deleta plataforma
+  async function deletar(id) {
+    if (confirm('Deletar essa plataforma?')) {
+      await supabase.from('links_roleta').delete().eq('id', id)
+      buscarLinks()
+    }
   }
 
-  async function deletar(id){
-    if(confirm('Deletar?')){ await supabase.from('links_roleta').delete().eq('id',id); carregar() }
+  // Conta clique e abre link
+  async function abrirLink(link) {
+    await supabase.from('links_roleta').update({ cliques: (link.cliques || 0) + 1 }).eq('id', link.id)
+    window.open(link.url, '_blank')
+    buscarLinks()
   }
 
-  const totalCliques = links.filter(l=>l.categoria!=='social_topo').reduce((a,l)=>a+(l.cliques||0),0)
-  const linksTopo = links.filter(l=>l.categoria==='social_topo')
-  const linksPlataformas = links.filter(l=>l.categoria!=='social_topo')
-
-  if(isAdmin &&!logado){
+  // Login admin simples
+  if (isAdmin && senha!== '06032025') {
     return (
-      <div style={{padding:20, fontFamily:'Arial', maxWidth:400, margin:'50px auto', textAlign:'center'}}>
-        <img src={LOGO_URL} style={{width:100, height:100, borderRadius:'50%', border:'4px solid #FFEB3B', objectFit:'cover'}}/>
-        <h2 style={{marginTop:15}}>Área Admin</h2>
-        <input type="password" placeholder="Senha" value={senha} onChange={e=>setSenha(e.target.value)} style={{padding:12, width:'100%', marginBottom:10, borderRadius:8, border:'1px solid #ccc'}}/>
-        <button onClick={()=>{ if(senha===SENHA_ADMIN) setLogado(true); else alert('Senha errada')}} style={{padding:'12px 20px', background:'black', color:'white', border:'none', borderRadius:8, cursor:'pointer', width:'100%', fontWeight:'bold'}}>Entrar</button>
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm">
+          <h1 className="text-2xl font-bold mb-4 text-center">Admin</h1>
+          <input
+            type="password"
+            placeholder="Senha"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            className="w-full border p-3 rounded-lg mb-4"
+          />
+          <p className="text-xs text-gray-500 text-center">Acesse /#admin</p>
+        </div>
       </div>
     )
   }
 
+  // PAINEL ADMIN
+  if (isAdmin && senha === 'Grazi2024!') {
+    return (
+      <div className="min-h-screen bg-gray-100 p-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h1 className="text-2xl font-bold mb-6">Cadastrar Plataforma</h1>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input
+                required
+                placeholder="Nome: 98A.COM"
+                value={form.titulo}
+                onChange={(e) => setForm({...form, titulo: e.target.value})}
+                className="w-full border p-3 rounded-lg"
+              />
+              <input
+                required
+                placeholder="Link de afiliado: https://..."
+                value={form.url}
+                onChange={(e) => setForm({...form, url: e.target.value})}
+                className="w-full border p-3 rounded-lg"
+              />
+              <input
+                required
+                placeholder="URL da Imagem 512x512"
+                value={form.imagem}
+                onChange={(e) => setForm({...form, imagem: e.target.value})}
+                className="w-full border p-3 rounded-lg"
+              />
+              <input
+                placeholder="Bônus (opcional)"
+                value={form.bonus}
+                onChange={(e) => setForm({...form, bonus: e.target.value})}
+                className="w-full border p-3 rounded-lg"
+              />
+              <button type="submit" className="w-full bg-black text-white py-3 rounded-lg font-bold">
+                Salvar Plataforma
+              </button>
+            </form>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <h2 className="text-xl font-bold mb-4">Plataformas Cadastradas: {links.length}</h2>
+            <div className="space-y-3">
+              {links.map(link => (
+                <div key={link.id} className="flex items-center gap-4 border p-3 rounded-lg">
+                  <img src={link.imagem} className="w-16 h-16 object-contain rounded" />
+                  <div className="flex-1">
+                    <p className="font-bold">{link.titulo}</p>
+                    <p className="text-xs text-gray-500">Cliques: {link.cliques || 0}</p>
+                  </div>
+                  <button onClick={() => deletar(link.id)} className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm">
+                    Deletar
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // SITE PRINCIPAL
   return (
-    <div style={{ fontFamily:'Arial', background:'#f5f5f7', minHeight:'100vh' }}>
-      <header style={{background:'linear-gradient(135deg, #0f0f0f 0%, #2d2d2d 100%)', padding:'30px 20px', textAlign:'center', color:'white'}}>
-        <img src={LOGO_URL} alt="Logo" style={{width:100, height:100, borderRadius:'50%', border:'4px solid #FFEB3B', objectFit:'cover', boxShadow:'0 4px 15px rgba(255,235,59,0.3)'}}/>
-        <h1 style={{margin:'15px 0 0 0', fontSize:24, letterSpacing:1, fontWeight:'bold'}}>PLATAFORMAS COM BÔNUS DE ROLETA NO CADASTRO</h1>
-        {linksTopo.length>0 && (
-          <div style={{marginTop:20, display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap'}}>
-            {linksTopo.map(s=>(
-              <a key={s.id} href={s.url} target="_blank" style={{background:'white', color:'black', padding:'8px 16px', borderRadius:20, textDecoration:'none', fontWeight:'bold', fontSize:14}}>
-                {s.emoji} {s.titulo}
-              </a>
+    <div className="min-h-screen bg-[#f5f5f5]">
+      {/* HEADER PRETO */}
+      <div className="bg-[#0a0a0a] text-white py-6 px-4 text-center">
+        <h1 className="text-lg md:text-2xl font-black uppercase tracking-tight">
+          PLATAFORMAS COM BÔNUS DE ROLETA NO CADASTRO
+        </h1>
+        <a
+          href={GROUP_URL}
+          target="_blank"
+          className="inline-block mt-4 bg-white text-black px-6 py-2 rounded-full font-bold text-sm hover:bg-gray-200 transition"
+        >
+          ENTRA NO GRUPO VIP DO FACEBOOK
+        </a>
+      </div>
+
+      {/* GRID DE PLATAFORMAS */}
+      <div className="max-w-6xl mx-auto p-3 md:p-6">
+        {links.length === 0? (
+          <div className="text-center py-20 text-gray-400">
+            Nenhuma plataforma cadastrada ainda
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+            {links.map((link) => (
+              <div
+                key={link.id}
+                onClick={() => abrirLink(link)}
+                className="cursor-pointer group"
+              >
+                <div className="rounded-2xl overflow-hidden bg-white shadow-md hover:shadow-xl transition-all duration-300">
+                  {/* IMAGEM COMPLETA SEM CORTE */}
+                  <img
+                    src={link.imagem}
+                    alt={link.titulo}
+                    className="w-full aspect-square object-contain bg-white"
+                  />
+                  {/* SÓ NOME NO PÉ PRETO */}
+                  <div className="bg-black py-2.5 text-center">
+                    <p className="text-white font-black text- uppercase tracking-widest">
+                      {link.titulo}
+                    </p>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         )}
-      </header>
-
-      <div style={{ maxWidth: 1000, margin: '0 auto', padding:20 }}>
-        {isAdmin && logado && (
-          <>
-            <div style={{ background: '#FFEB3B', padding: 15, textAlign: 'center', fontWeight: 'bold', borderRadius: 10, marginBottom: 20, border: '2px solid black' }}>
-              ADMIN - {linksPlataformas.length} links
-              <div style={{ fontSize: 24, marginTop: 5 }}>[TOTAL: {totalCliques} CLIQUES]</div>
-            </div>
-            <div style={{border:'1px solid #ddd', padding:15, borderRadius:12, marginBottom:20, background:'#fff'}}>
-              <h3>🌐 Cadastrar Rede Social do Topo</h3>
-              <div style={{display:'flex', gap:8, flexWrap:'wrap'}}>
-                <input placeholder="Emoji" value={formSocial.emoji} onChange={e=>setFormSocial({...formSocial,emoji:e.target.value})} style={{width:80, padding:10, borderRadius:8, border:'1px solid #ccc'}}/>
-                <input placeholder="Nome" value={formSocial.titulo} onChange={e=>setFormSocial({...formSocial,titulo:e.target.value})} style={{flex:1, padding:10, borderRadius:8, border:'1px solid #ccc'}}/>
-                <input placeholder="Link" value={formSocial.url} onChange={e=>setFormSocial({...formSocial,url:e.target.value})} style={{flex:1, padding:10, borderRadius:8, border:'1px solid #ccc'}}/>
-                <button onClick={salvarSocial} style={{background:'#111', color:'white', padding:'10px 15px', border:'none', borderRadius:8, cursor:'pointer'}}>Add Topo</button>
-              </div>
-            </div>
-            <div style={{border:'1px solid #ddd', padding:15, borderRadius:12, marginBottom:25, background:'#fff'}}>
-              <h3>Cadastrar Nova Plataforma</h3>
-              <input placeholder="Título" value={form.titulo} onChange={e=>setForm({...form,titulo:e.target.value})} style={{width:'100%', padding:10, marginBottom:8, borderRadius:8, border:'1px solid #ccc'}}/>
-              <input placeholder="URL" value={form.url} onChange={e=>setForm({...form,url:e.target.value})} style={{width:'100%', padding:10, marginBottom:8, borderRadius:8, border:'1px solid #ccc'}}/>
-              <input placeholder="Bônus" value={form.bonus} onChange={e=>setForm({...form,bonus:e.target.value})} style={{width:'100%', padding:10, marginBottom:8, borderRadius:8, border:'1px solid #ccc'}}/>
-              <input placeholder="Emoji 🎯" value={form.emoji} onChange={e=>setForm({...form,emoji:e.target.value})} style={{width:'100%', padding:10, marginBottom:8, borderRadius:8, border:'1px solid #ccc'}}/>
-              <label style={{fontWeight:'bold'}}>Imagem 512x512:</label>
-              <input type="file" accept="image/*" onChange={handleImagem} style={{width:'100%', padding:10, marginBottom:8}}/>
-              {preview && <img src={preview} style={{width:128, height:128, objectFit:'cover', borderRadius:8, border:'1px solid #ccc'}}/>}
-              <button onClick={salvarLink} disabled={carregando} style={{background:'green', color:'white', padding:'12px', border:'none', borderRadius:8, cursor:'pointer', marginTop:10, width:'100%', fontWeight:'bold'}}>{carregando?'Enviando...':'Salvar Link'}</button>
-            </div>
-          </>
-        )}
-        <div style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill, minmax(300px, 1fr))', gap: 20, marginTop: 20 }}>
-          {linksPlataformas.map(l => (
-            <div key={l.id} style={{ border: '1px solid #e5e7eb', padding: 0, borderRadius: 16, background:'#fff', overflow:'hidden', boxShadow:'0 4px 12px rgba(0,0,0,0.08)' }}>
-              {l.imagem && <img src={l.imagem} alt={l.titulo} style={{width:'100%', height:200, objectFit:'cover'}}/>}
-              <div style={{padding:15}}>
-                <h3 style={{margin:'0 0 5px 0'}}>{l.emoji} {l.titulo}</h3>
-                <p style={{color:'#22c55e', fontWeight:'bold', margin:'5px 0'}}>{l.bonus}</p>
-                {isAdmin && logado && <p style={{ color: 'blue' }}>Cliques: {l.cliques || 0}</p>}
-                <button onClick={() => clicar(l)} style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)', color: 'white', padding: '12px', border: 'none', borderRadius: 10, cursor: 'pointer', fontWeight: 'bold', width:'100%', marginTop:10, fontSize:16 }}>ACESSAR PLATAFORMA →</button>
-                {isAdmin && logado && <button onClick={() => deletar(l.id)} style={{ background: '#ef4444', color: 'white', padding: '8px', border: 'none', borderRadius: 8, cursor: 'pointer', width:'100%', marginTop:8 }}>Deletar</button>}
-              </div>
-            </div>
-          ))}
-        </div>
-        {linksPlataformas.length === 0 && <p style={{ textAlign: 'center', marginTop: 40, color:'#888' }}>Nenhum link cadastrado ainda. Vá no /#admin para cadastrar.</p>}
       </div>
     </div>
   )
