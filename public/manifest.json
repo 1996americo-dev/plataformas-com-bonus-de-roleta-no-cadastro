@@ -1,6 +1,7 @@
 {
   "name": "Plataformas com Bônus de Roleta",
   "short_name": "Bônus Roleta",
+  "description": "Plataformas com bônus de roleta no cadastro",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f0f0f",
@@ -9,7 +10,8 @@
     {
       "src": "/jroleta-512x512.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "/jroleta-512x512.png",
