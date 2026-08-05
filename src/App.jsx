@@ -131,7 +131,7 @@ export default function App(){
                 <h3 style={{margin:'0 0 5px 0'}}>{l.emoji} {l.titulo}</h3>
                 <p style={{color:'#22c55e', fontWeight:'bold', margin:'5px 0'}}>{l.bonus}</p>
                 {isAdmin && logado && <p style={{ color: 'blue' }}>Cliques: {l.cliques || 0}</p>}
-                <button onClick={() => clicar(l)} style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)', color: 'white', padding: '12px', border: 'none', borderRadius: 10, cursor: 'pointer', fontWeight: 'bold', width:'100%', marginTop:10, fontSize:16 }}> →</button>
+                <button onClick={() => clicar(l)} style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)', color: 'white', padding: '12px', border: 'none', borderRadius: 10, cursor: 'pointer', fontWeight: 'bold', width:'100%', marginTop:10, fontSize:16 }}>
                 {isAdmin && logado && <button onClick={() => deletar(l.id)} style={{ background: '#ef4444', color: 'white', padding: '8px', border: 'none', borderRadius: 8, cursor: 'pointer', width:'100%', marginTop:8 }}>Deletar</button>}
               </div>
             </div>
