@@ -86,7 +86,7 @@ export default function App(){
         {linksTopo.length>0 && (
           <div style={{marginTop:20, display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap'}}>
             {linksTopo.map(s=>(
-              <a key={s.id} href={s.url} target="_blank" style={{background:'white', color:'black', padding:'8px 16px', borderRadius:20, textDecoration:'none', fontWeight:'bold', fontSize:14}}>
+              <a key={s.id} href={s.url} target="_blank" onClick={() => clicar(s)} style={{background:'white', color:'black', padding:'10px 20px', borderRadius:25, textDecoration:'none', fontWeight:'bold', fontSize:14, boxShadow:'0 2px 8px rgba(0,0,0,0.1)'}}>
                 {s.emoji} {s.titulo}
               </a>
             ))}
@@ -94,50 +94,57 @@ export default function App(){
         )}
       </header>
 
-      <div style={{ maxWidth: 1000, margin: '0 auto', padding:20 }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding:20 }}>
         {isAdmin && logado && (
           <>
             <div style={{ background: '#FFEB3B', padding: 15, textAlign: 'center', fontWeight: 'bold', borderRadius: 10, marginBottom: 20, border: '2px solid black' }}>
-              ADMIN - {linksPlataformas.length} links
+              ADMIN - {linksPlataformas.length} plataformas
               <div style={{ fontSize: 24, marginTop: 5 }}>[TOTAL: {totalCliques} CLIQUES]</div>
             </div>
             <div style={{border:'1px solid #ddd', padding:15, borderRadius:12, marginBottom:20, background:'#fff'}}>
-              <h3>🌐 Cadastrar Rede Social do Topo</h3>
+              <h3>🌐 Cadastrar Link do Topo (Ex: Grupo VIP)</h3>
               <div style={{display:'flex', gap:8, flexWrap:'wrap'}}>
                 <input placeholder="Emoji" value={formSocial.emoji} onChange={e=>setFormSocial({...formSocial,emoji:e.target.value})} style={{width:80, padding:10, borderRadius:8, border:'1px solid #ccc'}}/>
-                <input placeholder="Nome" value={formSocial.titulo} onChange={e=>setFormSocial({...formSocial,titulo:e.target.value})} style={{flex:1, padding:10, borderRadius:8, border:'1px solid #ccc'}}/>
-                <input placeholder="Link" value={formSocial.url} onChange={e=>setFormSocial({...formSocial,url:e.target.value})} style={{flex:1, padding:10, borderRadius:8, border:'1px solid #ccc'}}/>
-                <button onClick={salvarSocial} style={{background:'#111', color:'white', padding:'10px 15px', border:'none', borderRadius:8, cursor:'pointer'}}>Add Topo</button>
+                <input placeholder="Nome: GRUPO VIP" value={formSocial.titulo} onChange={e=>setFormSocial({...formSocial,titulo:e.target.value})} style={{flex:1, padding:10, borderRadius:8, border:'1px solid #ccc'}}/>
+                <input placeholder="Link do Facebook" value={formSocial.url} onChange={e=>setFormSocial({...formSocial,url:e.target.value})} style={{flex:1, padding:10, borderRadius:8, border:'1px solid #ccc'}}/>
+                <button onClick={salvarSocial} style={{background:'#111', color:'white', padding:'10px 15px', border:'none', borderRadius:8, cursor:'pointer', fontWeight:'bold'}}>Add Topo</button>
               </div>
             </div>
             <div style={{border:'1px solid #ddd', padding:15, borderRadius:12, marginBottom:25, background:'#fff'}}>
               <h3>Cadastrar Nova Plataforma</h3>
-              <input placeholder="Título" value={form.titulo} onChange={e=>setForm({...form,titulo:e.target.value})} style={{width:'100%', padding:10, marginBottom:8, borderRadius:8, border:'1px solid #ccc'}}/>
+              <input placeholder="Título: 98A.COM" value={form.titulo} onChange={e=>setForm({...form,titulo:e.target.value})} style={{width:'100%', padding:10, marginBottom:8, borderRadius:8, border:'1px solid #ccc'}}/>
               <input placeholder="URL" value={form.url} onChange={e=>setForm({...form,url:e.target.value})} style={{width:'100%', padding:10, marginBottom:8, borderRadius:8, border:'1px solid #ccc'}}/>
-              <input placeholder="Bônus" value={form.bonus} onChange={e=>setForm({...form,bonus:e.target.value})} style={{width:'100%', padding:10, marginBottom:8, borderRadius:8, border:'1px solid #ccc'}}/>
+              <input placeholder="Bônus: 5-88" value={form.bonus} onChange={e=>setForm({...form,bonus:e.target.value})} style={{width:'100%', padding:10, marginBottom:8, borderRadius:8, border:'1px solid #ccc'}}/>
               <input placeholder="Emoji 🎯" value={form.emoji} onChange={e=>setForm({...form,emoji:e.target.value})} style={{width:'100%', padding:10, marginBottom:8, borderRadius:8, border:'1px solid #ccc'}}/>
               <label style={{fontWeight:'bold'}}>Imagem 512x512:</label>
               <input type="file" accept="image/*" onChange={handleImagem} style={{width:'100%', padding:10, marginBottom:8}}/>
-              {preview && <img src={preview} style={{width:128, height:128, objectFit:'cover', borderRadius:8, border:'1px solid #ccc'}}/>}
-              <button onClick={salvarLink} disabled={carregando} style={{background:'green', color:'white', padding:'12px', border:'none', borderRadius:8, cursor:'pointer', marginTop:10, width:'100%', fontWeight:'bold'}}>{carregando?'Enviando...':'Salvar Link'}</button>
+              {preview && <img src={preview} style={{width:128, height:128, objectFit:'contain', borderRadius:8, border:'1px solid #ccc', background:'#fff'}}/>}
+              <button onClick={salvarLink} disabled={carregando} style={{background:'green', color:'white', padding:'12px', border:'none', borderRadius:8, cursor:'pointer', marginTop:10, width:'100%', fontWeight:'bold'}}>{carregando?'Enviando...':'Salvar Plataforma'}</button>
             </div>
           </>
         )}
-        <div style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill, minmax(300px, 1fr))', gap: 20, marginTop: 20 }}>
+
+        <div style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill, minmax(250px, 1fr))', gap: 16, marginTop: 20 }}>
           {linksPlataformas.map(l => (
-            <div key={l.id} style={{ border: '1px solid #e5e7eb', padding: 0, borderRadius: 16, background:'#fff', overflow:'hidden', boxShadow:'0 4px 12px rgba(0,0,0,0.08)' }}>
-              {l.imagem && <img src={l.imagem} alt={l.titulo} style={{width:'100%', height:200, objectFit:'cover'}}/>}
-              <div style={{padding:15}}>
-                <h3 style={{margin:'0 0 5px 0'}}>{l.emoji} {l.titulo}</h3>
-                <p style={{color:'#22c55e', fontWeight:'bold', margin:'5px 0'}}>{l.bonus}</p>
-                {isAdmin && logado && <p style={{ color: 'blue' }}>Cliques: {l.cliques || 0}</p>}
-                <button onClick={() => clicar(l)} style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)', color: 'white', padding: '12px', border: 'none', borderRadius: 10, cursor: 'pointer', fontWeight: 'bold', width:'100%', marginTop:10, fontSize:16 }}></button>
-                {isAdmin && logado && <button onClick={() => deletar(l.id)} style={{ background: '#ef4444', color: 'white', padding: '8px', border: 'none', borderRadius: 8, cursor: 'pointer', width:'100%', marginTop:8 }}>Deletar</button>}
+            <div key={l.id} onClick={() => clicar(l)} style={{ cursor: 'pointer', background:'#fff', borderRadius: 16, overflow:'hidden', boxShadow:'0 4px 12px rgba(0,0,0,0.08)', transition:'transform 0.2s' }} onMouseEnter={e=>e.currentTarget.style.transform='translateY(-4px)'} onMouseLeave={e=>e.currentTarget.style.transform='translateY(0)'}>
+              {l.imagem && (
+                <div style={{background:'#fff'}}>
+                  <img src={l.imagem} alt={l.titulo} style={{width:'100%', aspectRatio:'1/1', objectFit:'contain'}}/>
+                </div>
+              )}
+              <div style={{background:'#000', padding:'12px', textAlign:'center'}}>
+                <p style={{margin:0, color:'white', fontWeight:'900', fontSize:13, letterSpacing:'1px', textTransform:'uppercase'}}>{l.titulo}</p>
               </div>
+              {isAdmin && logado && (
+                <div style={{padding:10, background:'#f9f9f9', borderTop:'1px solid #eee'}}>
+                  <p style={{ margin:'0 0 8px 0', color: '#3b82f6', fontSize:12 }}>Cliques: {l.cliques || 0}</p>
+                  <button onClick={(e) => {e.stopPropagation(); deletar(l.id)}} style={{ background: '#ef4444', color: 'white', padding: '8px', border: 'none', borderRadius: 8, cursor: 'pointer', width:'100%', fontSize:12, fontWeight:'bold' }}>Deletar</button>
+                </div>
+              )}
             </div>
           ))}
         </div>
-        {linksPlataformas.length === 0 && <p style={{ textAlign: 'center', marginTop: 40, color:'#888' }}>Nenhum link cadastrado ainda. Vá no /#admin para cadastrar.</p>}
+        {linksPlataformas.length === 0 && <p style={{ textAlign: 'center', marginTop: 40, color:'#888' }}>Nenhuma plataforma cadastrada. Vá em /#admin</p>}
       </div>
     </div>
   )
