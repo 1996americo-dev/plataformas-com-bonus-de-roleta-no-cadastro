@@ -15,7 +15,7 @@ export default function App(){
   const [carregando, setCarregando] = useState(false)
 
   async function carregar(){
-    const {data} = await supabase.from('links_roleta').select('*').order('cliques',{ascending:true})
+    const {data} = await supabase.from('links_roleta').select('*').order('id',{ascending:false})
     if(data) setLinks(data)
   }
   useEffect(()=>{ carregar() },[])
