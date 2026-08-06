@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabase'
 
-const SENHA_ADMIN = "Grazi2024!"
+const SENHA_ADMIN = "06032025"
 const LOGO_URL = "https://xvhtuacgagthzvusybsg.supabase.co/storage/v1/object/public/roleta/edited_image_6191efe2.jpg"
 
 export default function App(){
