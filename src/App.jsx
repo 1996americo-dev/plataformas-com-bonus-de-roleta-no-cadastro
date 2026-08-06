@@ -67,6 +67,16 @@ export default function App(){
   const linksTopo = links.filter(l=>l.categoria==='social_topo')
   const linksPlataformas = links.filter(l=>l.categoria!=='social_topo')
 
+  // AVISO +18 - aparece só pra quem não é admin logado
+const Aviso18 = (
+  <div style={{background:'#0f0f0f', borderTop:'1px solid #333', padding:'14px 10px', textAlign:'center', marginTop:'30px'}}>
+    <p style={{color:'#999', fontSize:'12px', fontFamily:'Arial', margin:0}}>
+      <span style={{border:'1.5px solid #999', borderRadius:'4px', padding:'1px 6px', fontWeight:'bold', marginRight:'6px'}}>+18</span>
+      Jogo Responsável: Conteúdo para maiores de 18 anos. Jogue com responsabilidade.
+    </p>
+  </div>
+)
+
   if(isAdmin &&!logado){
     return (
       <div style={{padding:20, fontFamily:'Arial', maxWidth:400, margin:'50px auto', textAlign:'center'}}>
@@ -146,6 +156,7 @@ export default function App(){
         </div>
         {linksPlataformas.length === 0 && <p style={{ textAlign: 'center', marginTop: 40, color:'#888' }}>Nenhuma plataforma cadastrada. Vá em /#admin</p>}
       </div>
+      {Aviso18}
     </div>
   )
 }
