@@ -124,7 +124,7 @@ export default function App(){
           </>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill, minmax(250px, 1fr))', gap: 16, marginTop: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns:'repeat(auto-fill, minmax(140px, 1fr))', gap: 16, marginTop: 20 }}>
           {linksPlataformas.map(l => (
             <div key={l.id} onClick={() => clicar(l)} style={{ cursor: 'pointer', background:'#fff', borderRadius: 16, overflow:'hidden', boxShadow:'0 4px 12px rgba(0,0,0,0.08)', transition:'transform 0.2s' }} onMouseEnter={e=>e.currentTarget.style.transform='translateY(-4px)'} onMouseLeave={e=>e.currentTarget.style.transform='translateY(0)'}>
               {l.imagem && (
